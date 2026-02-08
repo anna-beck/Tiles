@@ -1,6 +1,7 @@
 # GEOG 458 – Lab 4: Map Design and Tile Generation
 
 ## Live Web Map
+[Click To View Map](https://anna-beck.github.io/Tiles/)
 
 
 ---
