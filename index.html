@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Seattle Web Tile Sets</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.18.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.18.1/mapbox-gl.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+    #menu {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255,255,255,0.92);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      z-index: 1;
+      max-width: 280px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+    #menu h3 {
+      margin: 0 0 6px 0;
+      font-size: 13px;
+    }
+    #menu p {
+      margin: 0 0 8px 0;
+      line-height: 1.25;
+    }
+    #menu label {
+      display: block;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    #menu input { margin-right: 8px; }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <div id="menu">
+    <h3>Seattle Web Map Tiles</h3>
+    <p>Four raster tile sets exported from QGIS (QMetaTiles) and displayed with Mapbox GL JS.</p>
+
+    <strong>Layer switcher</strong>
+    <label><input type="radio" name="layer" value="ts1" checked> Tileset 1 (Basemap)</label>
+    <label><input type="radio" name="layer" value="ts2"> Tileset 2 (EV charging)</label>
+    <label><input type="radio" name="layer" value="ts3"> Tileset 3 (Basemap + EV)</label>
+    <label><input type="radio" name="layer" value="ts4"> Tileset 4 (Lesbian flag theme)</label>
+  </div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYW5uYWJ1dyIsImEiOiJjbWt6MHQ2Y3owZG9yM2dwd3Rsbmd3Z2VjIn0.8mbsdZSWQd8bNdc2tYgNrA';
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [-122.335167, 47.608013],
+      zoom: 12,
+      minZoom: 12,
+      maxZoom: 14,
+      maxBounds: [
+        [-122.45, 47.48],
+        [-122.22, 47.73]
+      ]
+    });
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.addControl(new mapboxgl.ScaleControl({ maxWidth: 120, unit: 'imperial' }), 'bottom-left');
+
+    map.on('load', () => {
+
+      map.addSource('ts1src', {
+        type: 'raster',
+        tiles: [
+          'assets/tileset_1/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        attribution: 'Tileset 1 (Basemap) exported from QGIS'
+      });
+
+      map.addLayer({
+        id: 'ts1',
+        type: 'raster',
+        source: 'ts1src',
+        layout: {
+          'visibility': 'visible'
+        }
+      });
+
+      map.addSource('ts2src', {
+        type: 'raster',
+        tiles: [
+          'assets/tileset_2/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        attribution: 'Tileset 2 (EV charging) exported from QGIS'
+      });
+
+      map.addLayer({
+        id: 'ts2',
+        type: 'raster',
+        source: 'ts2src',
+        layout: {
+          'visibility': 'none'
+        }
+      });
+
+      map.addSource('ts3src', {
+        type: 'raster',
+        tiles: [
+          'assets/tileset_3/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        attribution: 'Tileset 3 (Basemap + EV) exported from QGIS'
+      });
+
+      map.addLayer({
+        id: 'ts3',
+        type: 'raster',
+        source: 'ts3src',
+        layout: {
+          'visibility': 'none'
+        }
+      });
+
+      map.addSource('ts4src', {
+        type: 'raster',
+        tiles: [
+          'assets/tileset_4/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        attribution: 'Tileset 4 (Lesbian flag theme) exported from QGIS'
+      });
+
+      map.addLayer({
+        id: 'ts4',
+        type: 'raster',
+        source: 'ts4src',
+        layout: {
+          'visibility': 'none'
+        }
+      });
+
+      const radios = document.querySelectorAll('input[name="layer"]');
+
+      function showOnly(targetId) {
+        const ids = ['ts1', 'ts2', 'ts3', 'ts4'];
+        for (let i = 0; i < ids.length; i++) {
+          const id = ids[i];
+          map.setLayoutProperty(id, 'visibility', (id === targetId) ? 'visible' : 'none');
+        }
+      }
+
+      for (let i = 0; i < radios.length; i++) {
+        radios[i].addEventListener('change', (e) => {
+          showOnly(e.target.value);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
